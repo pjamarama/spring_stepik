@@ -2,10 +2,18 @@ package org.agrokhotov;
 
 import org.agrokhotov.spring_introduction.Cat;
 import org.agrokhotov.spring_introduction.Pet;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class CatTest {
     public static void main(String[] args) {
-        Pet cat = new Cat();
+
+        ClassPathXmlApplicationContext context =
+                new ClassPathXmlApplicationContext("applicationContextAnno.xml");
+
+        Pet cat = context.getBean("catBean", Cat.class);
         cat.say();
+
+        context.close();
     }
+
 }

@@ -7,15 +7,18 @@
     http://www.springframework.org/schema/context
     http://www.springframework.org/schema/context/spring-context.xsd">
 
-     
+    <context:property-placeholder location="classpath:myApp.properties"/>
 
     <bean id="myPet"
-          class="org.agrokhotov.spring_introduction.Dog">
+          class="org.agrokhotov.spring_introduction.Dog"
+
+          init-method="init"
+          destroy-method="destroy">
     </bean>
 
     <bean id="myPerson"
           class="org.agrokhotov.spring_introduction.Person">
-<!--        <constructor-arg ref="myDog"/>  this is for consctructor based DI-->
+        <!--        <constructor-arg ref="myDog"/>  this is for consctructor based DI-->
         <property name="pet" ref="myPet"/>
         <property name="surname" value="${person.surname}"/>
         <property name="age" value="${person.age}"/>
