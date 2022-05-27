@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-@Component("dogBean")
-//@Scope("prototype")
 public class Dog implements Pet {
 
     public Dog() {
@@ -19,13 +17,4 @@ public class Dog implements Pet {
         System.out.println("Bow-wow!");
     }
 
-    @PostConstruct
-    public void init() {
-        System.out.println("init method for Dog");
-    }
-
-    @PreDestroy
-    public void destroy() {
-        System.out.println("destroy method for Dog");
-    }
 }
