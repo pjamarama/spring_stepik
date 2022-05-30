@@ -1,9 +1,6 @@
 package org.agrokhotov.spring_introduction;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 public class Person {
     private Pet pet;
@@ -12,7 +9,8 @@ public class Person {
 
 //    public Person() {}
 
-    public Person(Pet pet) {
+    public Person(@Qualifier("catBean") Pet pet) {
+        System.out.println("Person bean is created");
         this.pet = pet;
     }
 

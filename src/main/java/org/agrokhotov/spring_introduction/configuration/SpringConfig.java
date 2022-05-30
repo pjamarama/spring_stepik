@@ -4,11 +4,12 @@ import org.agrokhotov.spring_introduction.Cat;
 import org.agrokhotov.spring_introduction.Person;
 import org.agrokhotov.spring_introduction.Pet;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class SpringConfig {
 
-    @Bean // beanId здесь - название метода, catBean
+    @Bean
     public Pet catBean() {
         return new Cat();
     }
