@@ -68,6 +68,17 @@ private String name;
 `@Value("${person.firstname}")
 private String name;`
 
+### Конфигурация с помощью Java-файла
+Property-file указывается над классом конфигурации:
+@Configuration
+@PropertySource("classpath:myApp.properties")
+public class MyConfig {}
+
+Над полями так же указываются аннотации:
+@Value("${person.surname}")
+private String surname;
+
+@Value()
 
 ## Область видимости бина
 Scope (область видимости) бина определяет
@@ -168,13 +179,24 @@ public Person(@Qualifier("dogBean") Pet pet) {}`
 
 ## Конфигурация с помощью Java code
 ### Способ 1
-Поставить аннотации @Configuration и @ComponentScan("packageName") над классом, содержащим конфигурацию. Первая аннотация показывает, что этот класс описывает конфигурацию Спринг, вторая показывает, какой пакет нужно сканировать для поиска компонентов Спринга.
+Поставить аннотации **@Configuration** и **@ComponentScan("packageName")** над классом, содержащим конфигурацию. Первая аннотация показывает, что этот класс описывает конфигурацию Спринг, вторая показывает, какой пакет нужно сканировать для поиска компонентов Спринга.
 
 Application context создается с помощью другого класса:
 AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(SpringConfig.class);
 
 ### Способ 2
-В этом способе не происходит сканирования компонентов, поэтому отсутствует необходимость писать аннотации @ComponentScan и @Component
+В этом способе не происходит сканирования компонентов, поэтому отсутствует необходимость писать аннотации **@ComponentScan** и **@Component**.
+
+Бины описываются в конфигурационном файле:
+    @Bean
+    public Pet catBean() {
+        return new Cat();
+    }
+
+    @Bean
+    public Person personBean() {
+        return new Person(catBean());
+    }
  
 
 
