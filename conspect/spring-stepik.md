@@ -226,4 +226,35 @@ Cross-cutting logic, сквозная логика лежит в основе As
 - Spring AOP, простой в использованииб предоставляет самую распространенную и необходимую функциональность АОП.
 - AspectJ предоставляет всю функциональность, более сложный в использовании.
 
+## Advice тип @Before
+Скачиваем пакет **AspectJ**
 
+Мы хотим, чтоб при вызове метода getBook() происодило логирование, и чтобы оно происходило до основного функционала метода.
+В конфигурационный файл добавляем аннотацию **@EnableAspectJAutoProxy**, создаем класс LoggingAspect, ставим на него аннотацию **@Aspect**
+
+Advice, это метод, который находится в aspect-классе и выполняется при вызове метода getBook(). 
+Создаём метод beforeGetBookAdvice(), ставим над ним аннотацию **@Before("execution(public void getBook())")**. 
+Элемент "execution(public void getBook())" называется pointcut, это выражение, которое показывает, где будет применен advice.
+
+### Типы методов advice
+ - Before. Выполняется до метода с основной логикой
+ - After returning. Только после нормального окончания метода с основной логикой
+ - After throwing. после окончания метода с основной логикой, только если было выброшено исключение
+ - After/After finally. После окончания метода с основной логикой.
+ - Around. До и после метода с основной логикой.
+
+## Pointcut
+P., это выражение, указывающее, где будет применен advice. Spring AOP использует AspectJ Pointcut expression language, определенные правила для написания pointcut.
+
+Шаблон для написания pointcut:
+**execution(** modifiers-pattern? **return-type-pattern** declaring-type-pattern? 
+    **method-name-pattern(parameters-pattern)** throws-pattern? )
+Жирным выделены обязательные элементы.
+
+Если declaring-type-pattern не указан, и существуют методы в разных классах, подходящие под заданный шаблон, advice-метод будет выполнен для всех подходящих под шаблон методов.
+
+FQDN определяет, метод какого класса будет выполнен:
+@Before("execution(public void aop.UniLibrary.getBook())")
+
+Pointcut так же может использовать wildcard'ы:
+@Before("execution(public void get*())") - подходят все get-методы без параметров из любого класса пакета.
