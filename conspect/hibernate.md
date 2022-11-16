@@ -38,7 +38,7 @@ JPA, это стандартизированная спецификация, к�
 Сессия, это обертка вокруг подключения к БД с помощью JDBC. Она является основой для работы с БД, с помощью сессии мы совершаем CRUD-операции.  
 Чтобы создать сессию, сначала нужно создать sessionFactory. Ее создаем, указывая конфиг Н. Если файл конфигурации называется hibernate.cfg.xml, его имя можно не писать:
 ```java
-    SessionFactory factory = new Configuration()
+SessionFactory factory = new Configuration()
         .configure("hibernate.cfg.xml")
         .addAnnotatedClass(Employee.class)
         .buildSessionFactory();
@@ -49,9 +49,9 @@ JPA, это стандартизированная спецификация, к�
 - Совершаем CRUD-операции
 - Закрываем транзакцию
 ```java
-    session.beginTransaction();
-    session.save(employee);
-    session.getTransaction().commit();
+session.beginTransaction();
+session.save(employee);
+session.getTransaction().commit();
 ```
 
 Сессия обязательно должна быть закрыта, поэтому код работы с бд нужно обернуть в try-catch.
@@ -71,4 +71,66 @@ alter user postgres password 'postgres';
 session.get(Employee.class, 14);
 ```
 
- 
+### Получение всех данных из таблицы
+Выполним с помощью HQL:
+```java
+List<Employee> employeeList = session.createQuery("from Employee").getResultList();
+List<Employee> alexanders = session
+        .createQuery("from Employee where name = 'Alexander' and salary > 100")
+        .getResultList();
+```
+ Employee здесь, это имя класса, а не название таблицы. name - название поля в классе Employee.
+
+### Обновление данных
+```java
+session.beginTransaction();
+Employee alexey = session.get(Employee.class, 0);
+alexey.setSalary(500);
+session.getTransaction().commit();
+```
+Создание запроса. Изменяем зарплату всех Александров:
+```java
+session.createQuery("update Employee set salary = 1000 where name = 'Alexander'").executeUpdate();
+```
+
+### Удаление
+Удаление имеющегося экземпляра:
+```java
+Employee employee = session.get(Employee.class, 18);
+session.delete(employee);
+```
+Удаление с помощью HQL-запроса:
+```java
+session.createQuery("delete Employee where name = 'Alexander'").executeUpdate();
+```
+
+## Типы отношений таблиц
+### Один к одному
+Пример: Школа - диркетор.  
+Uni-directional associations - отношения (ассоциации), в которых одна сторона об этих отношениях не знает. Например, человек знает, что у него есть номер телефона, а номер телефона не знает, что у него есть человек. Или еще пример: 
+```java
+class Parent {
+    private Child child;
+}
+
+class Child {}
+```
+
+Bi-directional associations:
+```java
+class Parent {
+    private Child child;
+}
+
+class Child {
+    private Parent parent;
+}
+```
+
+### Один ко многим
+Департамент - работник
+### Многие к одному
+Перевернутый вариант отношения "Один ко многим"
+Работник - департамент
+### Многие ко многим
+Кружок - ребенок
