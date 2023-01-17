@@ -48,11 +48,11 @@
       <artifactId>postgresql</artifactId>
       <version>42.5.0</version>
     </dependency>
-    <dependency>
-      <groupId>org.hibernate.common</groupId>
-      <artifactId>hibernate-commons-annotations</artifactId>
-      <version>5.1.0.Final</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.hibernate.common</groupId>-->
+<!--      <artifactId>hibernate-commons-annotations</artifactId>-->
+<!--      <version>5.1.0.Final</version>-->
+<!--    </dependency>-->
     <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
     <dependency>
       <groupId>org.hibernate</groupId>
