@@ -17,18 +17,33 @@ public class Test1 {
                         .buildSessionFactory();
                 Session session = factory.getCurrentSession();
         ) {
-            Department department = new Department("HR", 500, 1000);
-            Employee employee1 = new Employee("Andrey", "Ivanov", 800);
-            Employee employee2 = new Employee("Elena", "Sidorova", 750);
-
-            department.addEmployeeToDepartment(employee1);
-            department.addEmployeeToDepartment(employee2);
-
+//            Department department = new Department("Sales", 800, 1500);
+//            Employee employee1 = new Employee("Zaur", "Tregulov", 800);
+//            Employee employee2 = new Employee("Elena", "Smirnova", 1500);
+//            Employee employee3 = new Employee("Anton", "Sidorov", 1200);
+//
+//            department.addEmployeeToDepartment(employee1);
+//            department.addEmployeeToDepartment(employee2);
+//            department.addEmployeeToDepartment(employee3);
+//
+//            session.beginTransaction();
+//            session.save(department);
+//            session.getTransaction().commit();
+//            System.out.println("Done!");
             session.beginTransaction();
-//            Department department = session.get(Department.class, 2);
-//            session.delete(department);
-            session.save(department);
+            System.out.println("Get department");
+            Department department = session.get(Department.class, 2);
+
+            System.out.println("Подгружаем работников");
+            department.getEmps().get(0); // подгружаем, обращаясь к первому элементу, но ничего с ним не делаем
+
             session.getTransaction().commit();
+
+            System.out.println("Show department");
+            System.out.println(department);
+            System.out.println("Show department employees");
+            System.out.println(department.getEmps());
+
             System.out.println("Done!");
         }
     }

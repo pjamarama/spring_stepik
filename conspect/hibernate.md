@@ -6,10 +6,20 @@
 Иногда удобнее запускать БД в контейнере, нежели устанавливать ее на рабочий компьютер.
 ```shell
 docker run -d -p 2345:5432 postgres
+docker run -it -p 2345:5432 -e POSTGRES_PASSWORD=password postgres
 .....
 Digest: sha256:f4cd32e7a418d9c9ba043e7d561243388202b654c740bcc85ca40b41d9fb4f1e
 Status: Downloaded newer image for postgres:latest
 97ebdd169e5dae756fc19f9046720317a7c7ef821da4d2f97add313b112ae2e5
+```
+Настроить бд, раздать права. В консоли делать муторно, просто установил пароль для суперпользователя postgres и подключался им же.
+```sql
+create user alexey; --creating role
+GRANT CONNECT ON DATABASE postgres TO alexey;
+
+grant all privileges on database postgres to alexey;
+grant all privileges on table employees to alexey; --optional?
+alter user alexey password 'postgres';
 ```
 
 ## Связь между классом и таблицей
@@ -63,18 +73,7 @@ session.beginTransaction();
 session.save(employee);
 session.getTransaction().commit();
 ```
-
 Сессия обязательно должна быть закрыта, поэтому код работы с бд нужно обернуть в try-catch.
-Настроить бд, раздать права. В консоли делать муторно, просто установил пароль для суперпользователя postgres и подключался им же.
-```sql
-GRANT CONNECT
-ON DATABASE database_name 
-TO user_name;
-
-grant all privileges on database postgres to alexey;
-grant all privileges on table employees to alexey;
-alter user postgres password 'postgres';
-```
 
 ### Получение записи из БД
 ```java
@@ -243,8 +242,59 @@ System.out.println(employee.getDepartment());
 
 
 ### Многие ко многим
-Кружок - ребенок
+Кружок - ребенок. Для отслеживания связей м2м используются join-таблицы. Join Table отображает связь между строками двух других таблиц. Столбцы JT, это foreign key, которые ссылаются на первичные ключи связываемых таблиц.  
+![alt text](join-table-example.png)  
+child_id, это fk в таблице child_section и он ссылается на pk таблицы children.  
+section_id, это fk в таблице child_section и он ссылается на pk таблицы section.  
+Создание таблиц для упражнений m2m:  
+```sql
+CREATE TABLE children (
+    id serial primary key,
+    name varchar(15),
+    age int
+);
+
+CREATE TABLE sections (
+    id serial primary key,
+    name varchar(15)
+);
+
+CREATE TABLE child_section (
+  child_id int,
+  section_id int,
+  PRIMARY KEY (child_id, section_id),
+  constraint fk_child_id foreign key (child_id) references children(id),
+  constraint fk_sections_id foreign key (section_id) references sections(id));
+```
+
+Конфигурация отношения:
+```java
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "child_section",
+            joinColumns = @JoinColumn(name = "child_id"),
+            inverseJoinColumns = @JoinColumn(name = "section_id")
+    )
+    private List<Section> sections;
+
+@ManyToMany
+@JoinTable(
+    name = "child_section",
+    joinColumns = @JoinColumn(name = "section_id"),
+    inverseJoinColumns = @JoinColumn(name = "child_id")
+)
+private List<Child> children;
+```
+![alt text](m2m-join.png)
 
 ### Типы загрузки данных
 - Eager. Связанные сущности загружаются сразу вместе с загрузкой основной сущности (при загрузке департамента загружаются сотрудники).
 - Lazy. Связанные сущности загружаются только при первом обращении к ним. На практике чаще всего применяется lazy-загрузка.
+
+Типы выборки по-умолчанию:  
+![alt text](default-fetch-type.png "Выбор типа связи по-умолчанию")  
+Тип выборки прописывавется при определении типа связи:
+```java
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department", fetch = FetchType.EAGER)
+    private List<Employee> emps;
+```
