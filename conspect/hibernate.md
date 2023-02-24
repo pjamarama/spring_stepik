@@ -185,7 +185,7 @@ CREATE TABLE employees (
     constraint fk_department_id foreign key (department_id) references departments(id)
 );
 ```
-![alt text](many2one_fk.png "Foreign key for this example")
+![alt text](pics/many2one_fk.png "Foreign key for this example")
 На картинке выше employees, это source-таблица, а departments - target-таблица. В связи "много к одному" (а это перевернутая связь "один ко многим") FK всегда находится в таблице, "где много".   
 При использовании связи One-to-Many FK может находиться не в source-таблице, а в target-таблице. Мы все равно 
 прописываем FK в аннотации @JoinColumn, и H. сам разберется, в какой таблице находится FK.
@@ -243,7 +243,7 @@ System.out.println(employee.getDepartment());
 
 ### Многие ко многим
 Кружок - ребенок. Для отслеживания связей м2м используются join-таблицы. Join Table отображает связь между строками двух других таблиц. Столбцы JT, это foreign key, которые ссылаются на первичные ключи связываемых таблиц.  
-![alt text](join-table-example.png)  
+![alt text](pics/join-table-example.png)  
 child_id, это fk в таблице child_section и он ссылается на pk таблицы children.  
 section_id, это fk в таблице child_section и он ссылается на pk таблицы section.  
 Создание таблиц для упражнений m2m:  
@@ -285,14 +285,14 @@ CREATE TABLE child_section (
 )
 private List<Child> children;
 ```
-![alt text](m2m-join.png)
+![alt text](pics/m2m-join.png)
 
 ### Типы загрузки данных
 - Eager. Связанные сущности загружаются сразу вместе с загрузкой основной сущности (при загрузке департамента загружаются сотрудники).
 - Lazy. Связанные сущности загружаются только при первом обращении к ним. На практике чаще всего применяется lazy-загрузка.
 
 Типы выборки по-умолчанию:  
-![alt text](default-fetch-type.png "Выбор типа связи по-умолчанию")  
+![alt text](pics/default-fetch-type.png "Выбор типа связи по-умолчанию")  
 Тип выборки прописывавется при определении типа связи:
 ```java
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "department", fetch = FetchType.EAGER)

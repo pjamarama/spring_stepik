@@ -29,6 +29,9 @@ public class Test {
 
             session.beginTransaction();
 
+            session.save(child1);
+            session.save(child2);
+            session.save(child3);
             session.save(section1);
 
             session.getTransaction().commit();
