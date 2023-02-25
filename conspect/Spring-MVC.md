@@ -70,4 +70,69 @@ public class MyController {
         return "show-emp-details-view";
     }
 ```  
-Создаем необходимые вью с именами ask-emp-details-view и show-emp-details-view. В них делаем формы ввода.
+Создаем необходимые вью с именами ask-emp-details-view и show-emp-details-view. В них делаем формы ввода.  
+
+## Работа с моделью
+Добавляем модель в параметры метода, добавляем атрибуты в модель. Второй параметр при добавлении атрибута - Object, то есть, мы можем добавить в модель любой объект.
+```java
+@RequestMapping("/showDetails")
+public String showEmployeeDetails(HttpServletRequest request, Model model) {
+    String empName = request.getParameter("employeeName");
+    empName = "Mr " + empName;
+    model.addAttribute("nameAttribute", empName); // вместо nameAttribute можно использовать любое имя
+    model.addAttribute("description"," - software designer");
+    return "show-emp-details-view";
+}
+```
+
+Потом в .jsp вью извлекаем параметр:
+```
+Your name: ${nameAttribute} ${description}
+```  
+
+## Аннотация для чтения параметров @RequestParam
+При работе с формами эта аннотация позволяет нам связывать поле формы с параметром метода из контроллера.
+Извлечение параметра из HttpServletRequest'а происходит "за кулисами": 
+```java
+@RequestMapping("/showDetails")
+public String showEmployeeDetails(@RequestParam("employeeName") String empName, Model model) {
+    empName = "Mr " + empName + "!";
+    model.addAttribute("nameAttribute", empName); // вместо nameAttribute можно использовать любое имя
+    model.addAttribute("description"," - software designer");
+    return "show-emp-details-view";
+}
+```
+
+## Аннотация @RequestMapping для контроллера
+Когда мы поставим эту аннотацию над классом, путь в аннотации будет добавляться в начало пути, который указан над методами класса. Другими словами, @RequestMapping, указанный для контроллера, связывает URL со всеми методами контроллера. Аннотация над контроллером называется controller mapping, аннотация над методом - method mapping.
+```java
+@Controller
+@RequestMapping("/employee")
+public class MyController {}
+```  
+
+## Формы Spring MVC
+**form:form** - основная форма, содержащая в себе другие формы, форма-контейнер.
+**form:input** - форма, предназначенная для текста. Используется всего лишь одна строка.  
+Когда форма попадает в браузер, для каждого поля input срабатывает геттер.
+```
+<form:form action="showDetails" modelAttribute="employee">
+Name <form:input path="name"/>
+<input type="submit" value="OK"/>
+</form:form>
+```
+### Форма Input
+Когда форма попадает в браузер, для каждого поля input срабатывает геттер. Значение полей на данном этапе - по-умолчанию (null, 0). После нажатия submit срабатывают сеттеры, и каждое поле аттрибута employee получает значение из форм, которые мы туда ввели.
+
+При работе с формами аннотация @ModelAttribute в параметре метода контроллера дает доступ к конкретному аттрибуту модели:
+```java
+@RequestMapping("/showDetails")
+public String showEmployeeDetails(@ModelAttribute("employee") Employee emp) {
+    return "show-emp-details-view";
+}
+```
+Во вью обращение к значению идет по имени аттрибута и его полю:
+```
+Your name: ${employee.name}
+Your salary ${employee.salary}
+```
