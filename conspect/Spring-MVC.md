@@ -114,6 +114,9 @@ public class MyController {}
 ## Формы Spring MVC
 **form:form** - основная форма, содержащая в себе другие формы, форма-контейнер.
 **form:input** - форма, предназначенная для текста. Используется всего лишь одна строка.  
+
+### Форма Form
+Какого-то особого параграфа об этой форме не будет, так уж вот.  
 Когда форма попадает в браузер, для каждого поля input срабатывает геттер.
 ```
 <form:form action="showDetails" modelAttribute="employee">
@@ -136,3 +139,33 @@ public String showEmployeeDetails(@ModelAttribute("employee") Employee emp) {
 Your name: ${employee.name}
 Your salary ${employee.salary}
 ```
+
+### Форма Select
+Отвечает за выпадающий список, drop down list.
+```
+Department <form:select path="department">
+<form:option value="Information Technology" label="IT"/>
+<form:option value="Human Resourses" label="HR"/>
+<form:option value="Sales" label="Sales"/>
+</form:select>
+```
+Чтобы не хардкодить значения департаментов в форму, можно создать в employee еще одно поле с соответсвующими геттерами и сеттерами, создать мапу в конструкторе класса employee и положить туда соответствующие значения:
+```java
+private Map<String, String> departments;
+```
+Тогда вместо нескольких опций в форме будет следующий код:
+```
+Department <form:select path="department">
+<form:options items="${employee.departments}"/>
+</form:select></form:select>
+```
+
+### Форма Radio button
+Выбор машины. Можно глянуть в лекции, не стал реализовывать.
+
+### Форма Check box
+Выбор языков. Можно глянуть в лекции, не стал реализовывать.
+
+## Валидация форм Spring MVC
+Java Standard Bean Validation API - это спецификация, которая описывает правила валидации. 
+Hibernate Validator - реализация правил, описанных в Java Standard Bean Validation API.
