@@ -169,3 +169,94 @@ Department <form:select path="department">
 ## Валидация форм Spring MVC
 Java Standard Bean Validation API - это спецификация, которая описывает правила валидации. 
 Hibernate Validator - реализация правил, описанных в Java Standard Bean Validation API.
+
+### Валидация @Size
+В модели ставим аннотацию javax.validation.constraints над полем, которое хотим валидировать. Так же существует параметр max.
+```java
+@Size(min = 2, message = "Name must be at least 2 symbols")
+private String name;
+```
+В контроллере указываем аннотацию @Valid и для получения результата валидации аннотацию @BindingResult. На случай нескольких параметров в методе: параметр BindingResult должен идти сразу после параметра атрибута модели, иначе валидация может не сработать.
+```java
+public String showEmployeeDetails(@Valid @ModelAttribute("employee") Employee emp, BindingResult bindingResult) {
+  return bindingResult.hasErrors() ? "ask-emp-details-view" : "show-emp-details-view";
+}
+```
+
+В форме указываем имя аттрибута:
+```
+<form:errors path="name"/>
+```
+
+### Валидация @NotEmpty
+Эта аннотация требует, чтобы поле было и не null, и не пустой строкой.
+```java
+@NotEmpty(message = "Surname cannot be empty")
+    private String surname;
+```
+В форме так же указываем имя аттрибута:
+```
+Surname <form:input path="surname"/>
+    <form:errors path="surname"/>
+```
+
+### Валидация @NotBlank
+Эта аннотация проверяет все то же, что и @NotEmpty, но проверяет, чтобы поле не состояло из пробелов.
+Использование аналогично аннотациям выше.
+
+### Валидация чисел, валидация по шаблону
+```java
+@Min(value = 500, message = "must be greater than 499")
+@Max(value = 1000, message = "must be less than 1001")
+private int salary;
+
+@Pattern(regexp = "\\d{3}-\\d{2}-\\d{2}", message = "please use pattern XXX-XX-XX")
+private String phoneNumber;
+```
+
+Так же прописываем формы ошибки с соответствующим именем аттрибута:
+```
+Salary <form:input path="salary"/>
+<form:errors path="salary"/>
+
+Phone number <form:input path="phoneNumber"/>
+<form:errors path="phoneNumber"/>
+```
+
+### Создание собственной аннотации
+Пример: адрес почты должен заканчиваться на xyz.com.  
+Создаем аннотацию:
+```java
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = CheckEmailValidator.class)
+public @interface CheckEmail {
+    public String value() default "xyz.com";
+    public String message() default "email must end with xyz.com";
+    public Class<?>[] groups() default {};
+    public Class<? extends Payload> [] payload() default {};
+}
+```
+Создаем обработчик аннотации:
+```java
+public class CheckEmailValidator implements ConstraintValidator<CheckEmail, String> {
+    private String endOfEmail;
+
+    @Override
+    public void initialize(CheckEmail checkEmail) {
+        endOfEmail = checkEmail.value();
+    }
+
+    @Override
+    public boolean isValid(String enteredValue, ConstraintValidatorContext constraintValidatorContext) {
+        return enteredValue.endsWith(endOfEmail);
+    }
+}
+```
+Применяем аннотацию. По-умолчанию проверяется домен "xyz.com", но можно его изменить, добавив к аннотации параметры value и message.
+```java
+@CheckEmail
+private String email;
+```
+
+В форме указываем форму ошибки аналогично предыдущим примерам.
